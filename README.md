@@ -18,17 +18,17 @@ Use environment variable `STABILITY` to select specific Drupal version :
 ## Install Drupal
 
 You need to launch this command in this right order :  
-```
+```shell script
 # Install all files to correct path, set permission and create .env file
 make install
 ```
 
-```
+```shell script
 # Install Drupal and create admin access
 make admin
 ```
 
-```
+```shell script
 # Disable JS and CSS compression and clear cache
 # If this command are not launch, assets will not showing. 
 make preprocess-cache
