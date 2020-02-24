@@ -9,8 +9,27 @@ A Docker installer for runtime Drupal inspired by symfony-docker from dunglas.
 
 ## Use environment to change website configuration
 
-Use environment variable `DRUPAL_VERSION` to select specific Drupal version :
+Use environment variable `DRUPAL_VERSION` to select specific Drupal version :  
 `DRUPAL_VERSION=8.* docker-compose up --build`
 
-Use environment variable `STABILITY` to select specific Drupal version :
+Use environment variable `STABILITY` to select specific Drupal version :  
 `DRUPAL_VERSION=8.* STABILITY=dev docker-compose up --build`
+
+## Install Drupal
+
+You need to launch this command in this right order :  
+```
+# Install all files to correct path, set permission and create .env file
+make install
+```
+
+```
+# Install Drupal and create admin access
+make admin
+```
+
+```
+# Disable JS and CSS compression and clear cache
+# If this command are not launch, assets will not showing. 
+make preprocess-cache
+```
