@@ -1,0 +1,67 @@
+version: '3.4'
+
+services:
+  nginx:
+    build:
+      context: .
+      target: drupal_nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./web:/srv/app/web:ro
+    depends_on:
+      - php
+
+  php:
+    build:
+      context: .
+      target: drupal_php
+      args:
+        DRUPAL_VERSION: ${DRUPAL_VERSION:-}
+        STABILITY: ${STABILITY:-dev}
+    healthcheck:
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    volumes:
+      - .:/srv/app:rw,cached
+    environment:
+      - DRUPAL_VERSION
+    links:
+      - mariadb
+
+  mariadb:
+    image: mariadb:10.2
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
+    command:
+      - mysqld
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --key_buffer_size=512M
+      - --max_allowed_packet=16M
+      - --query_cache_size=100M
+      - --query_cache_limit=256k
+      - --query_cache_min_res_unit=2k
+      - --thread_stack=256K
+      - --innodb_flush_log_at_trx_commit=2
+      - --innodb_max_dirty_pages_pct=0
+      - --innodb_lock_wait_timeout=120
+      - --sync_binlog=0
+      - --innodb_thread_concurrency=0
+      - --innodb_flush_method=O_DIRECT
+
+  adminer:
+    image: adminer
+    ports:
+      - 8888:8080
+    links:
+      - mariadb
+
+  mail:
+    image: djfarrelly/maildev
+    ports:
+      - 1080:80
