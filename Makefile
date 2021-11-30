@@ -34,6 +34,14 @@ drop-tables: ## Supprime toutes les tables de la base de données -- DB_DATABASE
 	grep -e '^DROP \| FOREIGN_KEY_CHECKS' | \
 	$(de) -T mariadb /usr/bin/mysql -u root -proot $(DB_DATABASE)
 
+.PHONY: drupal.check
+drupal.check: ##@Drupal Check if drupal core is updatable -- add option -i
+	@composer outdated "drupal/core*"
+
+.PHONY: drupal.update
+drupal.update: vendor/autoload.php ##@Drupal Update dependencies core, core-composer-scaffold, core-recommended and core-dev
+	composer update drupal/core "drupal/core-*" --with-all-dependencies
+	
 .PHONY: install
 install: ## Installation globale du site (utilisé préalablement drop-tables)
 	$(dr) php install/install.sh
